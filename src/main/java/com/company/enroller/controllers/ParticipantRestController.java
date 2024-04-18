@@ -17,11 +17,11 @@ public class ParticipantRestController {
 	@Autowired
 	ParticipantService participantService;
 
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ResponseEntity<?> getParticipants() {
-		Collection<Participant> participants = participantService.getAll();
-		return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
-	}
+//	@RequestMapping(value = "", method = RequestMethod.GET)
+//	public ResponseEntity<?> getParticipants() {
+//		Collection<Participant> participants = participantService.getAll();
+//		return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+//	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getParticipant(@PathVariable("id") String login) {
@@ -36,7 +36,7 @@ public class ParticipantRestController {
 	public ResponseEntity<?> registerParticipant(@RequestBody Participant participant) {
 		Participant findParticipant = participantService.findByLogin(participant.getLogin());
 		if (findParticipant != null) {
-			return new ResponseEntity("Unable to create. A participant with login " + participant.getLogin() + " already exist.", HttpStatus.CONFLICT);
+			return new ResponseEntity<>("Unable to create. A participant with login " + participant.getLogin() + " already exist.", HttpStatus.CONFLICT);
 		}
 		participantService.add(participant);
 		return new ResponseEntity<Participant>(participant, HttpStatus.OK);
@@ -60,6 +60,17 @@ public class ParticipantRestController {
 		}
 		participantService.update(participant);
 		return new ResponseEntity<Participant>(participant, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public ResponseEntity<?> sortParticipants(@RequestParam(value = "sortOrder",required = false, defaultValue = "") String sortOrder, @RequestParam(value = "sortBy", required = false, defaultValue = "login") String sortBy, @RequestParam(value = "key", required = false, defaultValue = "") String key)	{
+		if(sortBy.equals("login")){
+			if(sortOrder.equals("ASC")|| sortOrder.equals("DESC") || sortOrder.isEmpty()){
+				Collection<Participant> participants = participantService.getAllWithParams(sortBy, sortOrder, key);
+				return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity("Invalid parameter",HttpStatus.NOT_FOUND);
 	}
 
 }

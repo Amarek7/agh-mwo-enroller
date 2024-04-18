@@ -47,4 +47,10 @@ public class ParticipantService {
 		connector.getSession().merge(newParticipant);
 		transaction.commit();
 	}
+
+	public Collection<Participant> getAllWithParams(String sortBy, String sortOrder, String key) {
+		String hql = "FROM Participant P WHERE P.login LIKE '%" +key+ "%' ORDER BY P." + sortBy + " " + sortOrder;
+		Query query = connector.getSession().createQuery(hql);
+		return query.list();
+	}
 }
