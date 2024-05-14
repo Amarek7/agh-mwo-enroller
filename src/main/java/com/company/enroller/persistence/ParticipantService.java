@@ -1,24 +1,28 @@
 package com.company.enroller.persistence;
 
-import java.util.Collection;
-
-import org.hibernate.Session;
+import com.company.enroller.model.Participant;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.company.enroller.model.Participant;
-
-import javax.servlet.http.Part;
+import java.util.Collection;
 
 @Component("participantService")
+
+
+
 public class ParticipantService {
+
+
 
 	DatabaseConnector connector;
 
 	public ParticipantService() {
 		connector = DatabaseConnector.getInstance();
 	}
+
 
 	public Collection<Participant> getAll() {
 		String hql = "FROM Participant";
@@ -30,7 +34,14 @@ public class ParticipantService {
 		return connector.getSession().get(Participant.class,login);
   }
 
+//	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 	public void add(Participant participant) {
+		String hashedPassword = passwordEncoder().encode(participant.getPassword());
+		participant.setPassword(hashedPassword);
 		Transaction transaction = connector.getSession().beginTransaction();
 		connector.getSession().save(participant);
 		transaction.commit();
