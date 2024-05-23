@@ -1,5 +1,6 @@
 package com.company.enroller.persistence;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 import com.company.enroller.model.Participant;
@@ -45,4 +46,5 @@ public class MeetingService {
 	public Meeting findById(long id) {
 		return connector.getSession().get(Meeting.class,id);
 	}
+
 }
